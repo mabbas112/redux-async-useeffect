@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { uiSliceActions } from "./ui-slice";
 
 const cartSlice = createSlice({
 
@@ -9,6 +8,10 @@ const cartSlice = createSlice({
         totalQuantity: 0
     },
     reducers: {
+        replaceCart: (state, action) => {
+            state.items = action.payload.items;
+            state.totalQuantity = action.payload.totalQuantity;
+        },
         addToCartHandler: (state, action) => {
             const newItem = action.payload;
             const existingItem = state.items.find(item => item.id === newItem.id)
@@ -41,44 +44,6 @@ const cartSlice = createSlice({
     }
 });
 
-export const sendToCart = (cart) => {
-    console.log('i am in action creator');
-
-    return async (dispatch) => {
-
-        dispatch(uiSliceActions.showNotification({
-            status: 'Pending',
-            title: 'Sending',
-            message: 'Sending cart data'
-        }))
-
-        const sendRequest = async () => {
-            const response = await fetch('https://module19-c35c0-default-rtdb.firebaseio.com/cart.json', {
-                method: 'PUT',
-                body: JSON.stringify(cart)
-            })
-            if (!response.ok)
-                throw new Error("Something wrong")
-        }
-
-        try {
-            await sendRequest();
-            dispatch(uiSliceActions.showNotification({
-                status: 'success',
-                title: 'Success',
-                message: 'Sent cart data successfully'
-            }))
-        } catch (error) {
-            dispatch(uiSliceActions.showNotification({
-                status: 'error',
-                title: 'Error',
-                message: 'Sending cart data failed'
-            }))
-        }
-
-
-    }
-}
 
 
 export default cartSlice;
